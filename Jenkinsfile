@@ -13,15 +13,14 @@ pipeline {
         timeout(time: 30, unit: 'MINUTES')
     }
 
-    stages {
-        stage('Checkout') {
-            steps {
-                // Using HTTPS to bypass the 'publickey' error you encountered
-                git branch: 'main',
-                    url: 'https://github.com/Janani230904/Maven2.git',
-                    credentialsId: 'github-token' 
-            }
-        }
+    stage('Checkout') {
+    steps {
+        // Switch from SSH to HTTPS
+        git branch: 'main',
+            url: 'https://github.com/Janani230904/Maven2.git',
+            credentialsId: 'github-token'
+    }
+}
 
         stage('Build') {
             steps {

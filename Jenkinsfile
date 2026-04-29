@@ -2,29 +2,27 @@ pipeline {
     agent any
 
     tools {
-        // These MUST match the names in 'Global Tool Configuration'
         maven 'Maven'
         jdk 'JDK21'
     }
 
     options {
-        // Professional practice: add timestamps and a timeout
         timestamps()
         timeout(time: 30, unit: 'MINUTES')
     }
 
-    stage('Checkout') {
-    steps {
-        // Switch from SSH to HTTPS
-        git branch: 'main',
-            url: 'https://github.com/Janani230904/Maven2.git',
-            credentialsId: 'github-token'
-    }
-}
+    // CRITICAL: You must wrap your stages in a "stages" block
+    stages {
+        stage('Checkout') {
+            steps {
+                git branch: 'main',
+                    url: 'https://github.com/Janani230904/Maven2.git',
+                    credentialsId: 'github-token'
+            }
+        }
 
         stage('Build') {
             steps {
-                // 'clean' ensures no old artifacts interfere with the new build
                 sh 'mvn clean compile'
             }
         }
@@ -37,22 +35,19 @@ pipeline {
 
         stage('Package') {
             steps {
-                // Creates the .jar or .war file
                 sh 'mvn package'
             }
         }
 
         stage('Run Application') {
             steps {
-                // Ensure com.example.app.App exists in your src directory
                 sh 'mvn exec:java -Dexec.mainClass="com.example.app.App"'
             }
         }
-    }
+    } // End of stages
 
     post {
         always {
-            // Clean up workspace to save disk space on DBMS-18
             cleanWs()
         }
         success {
